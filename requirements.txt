@@ -1,0 +1,6 @@
+streamlit
+pandas
+google-genai
+python-dotenv
+scikit-learn
+slack-bolt
