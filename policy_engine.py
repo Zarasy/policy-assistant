@@ -2,6 +2,7 @@ import re
 import time
 import os
 import json
+import streamlit as st
 
 from dotenv import load_dotenv
 from google import genai
@@ -19,12 +20,43 @@ load_dotenv()
 
 # =========================================================
 # GEMINI CLIENT
+# Works locally with .env and online with Streamlit Secrets
 # =========================================================
+
+def get_api_key():
+
+    # First try local environment / .env
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    if api_key:
+        return api_key
+
+    # If running on Streamlit Community Cloud,
+    # try Streamlit Secrets
+    try:
+        api_key = st.secrets["GEMINI_API_KEY"]
+
+        if api_key:
+            return api_key
+
+    except Exception:
+        pass
+
+    return None
+
 
 def get_client():
 
+    api_key = get_api_key()
+
+    if not api_key:
+        raise ValueError(
+            "GEMINI_API_KEY was not found. "
+            "Add it to .env locally or Streamlit Secrets online."
+        )
+
     return genai.Client(
-        api_key=os.getenv("GEMINI_API_KEY")
+        api_key=api_key
     )
 
 
